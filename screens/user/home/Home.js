@@ -1,40 +1,64 @@
 import React, { useEffect, useState } from 'react'
 import Search from '../../../components/user/home/Search'
 import ProductCard from '../../../components/user/home/ProductCards';
-import { View, StyleSheet, ActivityIndicator } from 'react-native';
+import { View, StyleSheet, Text } from 'react-native';
 import colors from '../../../constants/colors';
+import { useEcommerceContext } from '../../../contexts/ContextProvider';
+import SortingButton from '../../../components/user/home/SortingButton';
 
-export default function Home() {
+export default function Home(props) {
+    const { items } = useEcommerceContext();
 
-    const [data, setData] = useState([]);
-    const [isDataFetched, setIsDataFetched] = useState(false);
+    const [search, setSearch] = useState('');
 
-    const fetchData = async () => {
-        const responce = await fetch(`https://edamam-food-and-grocery-database.p.rapidapi.com/parser?ingr=apple`, {
-            method: 'GET',
-            headers: {
-                "x-rapidapi-host": "edamam-food-and-grocery-database.p.rapidapi.com",
-                "x-rapidapi-key": "c21f427b09msh296727ad4bf3af7p1dfe3djsned4f6f14e075"
-            }
-        })
-        const results = await responce.json();
-        setData(results);
-        setIsDataFetched(true);
-    }
+
+    const [filteredDataSource, setFilteredDataSource] = useState(items.categories);
+    const [masterDataSource, setMasterDataSource] = useState(items.categories);
 
     useEffect(() => {
-        fetchData();
-    }, [])
+        setFilteredDataSource(items.categories);
+        setMasterDataSource(items.categories);
+    }, [items]);
+
+    const searchFilterFunction = (text) => {
+        if (text) {
+            const newData = masterDataSource.map(function (item) {
+                const arr = item.items.filter(i => {
+                    const itemData = i.name
+                        ? i.name.toUpperCase()
+                        : ''.toUpperCase();
+                    const textData = text.toUpperCase();
+                    return itemData.indexOf(textData) > -1;
+                })
+                return {
+                    ...item,
+                    items: arr,
+                }
+
+            });
+            const searchedData = newData.filter(item => item.items.length > 0)
+            setFilteredDataSource(searchedData);
+            setSearch(text);
+
+        } else {
+            setFilteredDataSource(masterDataSource);
+            setSearch(text);
+        }
+    };
 
     return (
         <View style={styles.screen}>
-            <Search />
+            <Search search={search} searchFilterFunction={searchFilterFunction} />
+            <View style={styles.sortingButton}>
+
+                <SortingButton asc />
+            </View>
             {
-                isDataFetched ? (
-                    <ProductCard data={data} />
+                filteredDataSource.length > 0 ? (
+                    <ProductCard data={filteredDataSource} navigation={props.navigation} />
                 ) : (
-                    <View style={styles.center}>
-                        <ActivityIndicator size={30} color={colors.primary} />
+                    <View style={{ display: 'flex', height: '80%', justifyContent: 'center', alignItems: 'center' }}>
+                        <Text>Oops! No Match Results...</Text>
                     </View>
                 )
             }
@@ -46,23 +70,11 @@ export default function Home() {
 const styles = StyleSheet.create({
     screen: {
         flex: 1,
-        backgroundColor: '#fff',
+        backgroundColor: colors.secondary,
     },
-    text: {
-        fontSize: 60,
-        fontFamily: 'Inter_800ExtraBold',
-        color: 'white'
-    },
-    button: {
-        backgroundColor: 'white',
-        height: 50,
-        borderRadius: 20,
-        justifyContent: 'center',
-        alignItems: 'center'
-    },
-    center: {
-        flex: 1,
-        justifyContent: 'center',
-        alignItems: 'center'
+    sortingButton: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'flex-end'
     }
 });
