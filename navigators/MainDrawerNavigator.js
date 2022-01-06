@@ -6,21 +6,26 @@ import {
     DrawerItemList,
     DrawerItem
 } from '@react-navigation/drawer';
-import Home from '../screens/user/home/Home';
 import AdminHome from '../screens/admin/home/Home';
 import colors from '../constants/colors';
 import Orders from '../screens/user/orders/Orders';
 import Filters from '../screens/user/filter/Filter';
 import Favorites from '../screens/user/favorites/Favorites';
-import OffersAndDeals from '../screens/user/offers and deals/OfferAndDeals';
+import OffersAndDeals from '../screens/user/offersanddeals/OfferAndDeals';
 import HeaderButton from '../components/UI/HeaderButton';
-import { useSelector } from 'react-redux';
+import weeklyDeals from '../components/admin/deals/weeklyDeals';
 
 const { width } = Dimensions.get('window');
-import { Ionicons, FontAwesome5, MaterialIcons } from '@expo/vector-icons';
-import ManageRates from '../screens/admin/manage rates/ManageRates';
-import ManageOrders from '../screens/admin/manage orders/ManageOrders';
+import { Ionicons, FontAwesome5, MaterialIcons, Entypo } from '@expo/vector-icons';
+import ManageOrders from '../screens/admin/manageorders/ManageOrders';
+import { useEcommerceContext } from '../contexts/ContextProvider';
+import Home from '../screens/user/home/Home';
+
+import template from '../template/initialTemplate';
+import checkAndWriteFile from '../functions/checkAndWriteFile';
+
 function CustomDrawerContent(props) {
+    const { allData, setAllData, auth, setAuth } = useEcommerceContext();
     return (
         <>
             <DrawerContentScrollView {...props}>
@@ -32,8 +37,25 @@ function CustomDrawerContent(props) {
             </DrawerContentScrollView>
 
             <DrawerItem
-                label={`Sign-out`} onPress={() => {
-                    props.navigation.replace('Index')
+                label={`Sign-out`} onPress={async () => {
+
+                    const newAuth = {
+                        ...auth,
+                        whoIsLogin: template.auth.whoIsLogin,
+                        loginUserInfo: template.auth.loginUserInfo
+                    };
+
+                    const newData = {
+                        ...allData,
+                        auth: newAuth
+                    };
+
+                    await checkAndWriteFile(newData);
+                    setAuth(newAuth)
+                    setAllData(newData);
+
+                    props.navigation.replace('Index');
+
                 }}
                 style={{ bottom: 40 }}
 
@@ -57,7 +79,12 @@ function CustomDrawerContent(props) {
 const Drawer = createDrawerNavigator();
 
 export default function MainDrawerNavigator() {
-    const isUser = useSelector(state => state.auth.isUser);
+    const { auth, cart } = useEcommerceContext();
+    const index = cart?.findIndex(item => item.username == auth.loginUserInfo.username);
+    let length = 0;
+    if (index != -1) {
+        length = cart[index].items.length;
+    }
     return (
         <Drawer.Navigator
             initialRouteName="Home"
@@ -69,17 +96,18 @@ export default function MainDrawerNavigator() {
                 drawerStyle: { backgroundColor: colors.primary, width: '100%' },
                 drawerLabelStyle: { fontWeight: 'bold', left: -19 },
                 drawerItemStyle: { marginLeft: 26 },
-                drawerType: 'slide'
+                drawerType: 'slide',
+                headerTitleStyle: { fontFamily: 'bold' }
             }}
             drawerContent={props => <CustomDrawerContent {...props} />}
         >
-            {/* User Screen */}
             {
-                isUser ? (
+                auth.whoIsLogin == 'user' ? (
                     <>
+                        {/* User Screen */}
                         <Drawer.Screen name="Home" component={Home} options={({ navigation }) => ({
                             drawerIcon: ({ color, size, focused }) => <FontAwesome5 size={size} color={color} name={'house-user'} />,
-                            headerRight: () => <HeaderButton cart navigation={navigation} />
+                            headerRight: () => <HeaderButton cart navigation={navigation} text={length} />
                         })} />
                         <Drawer.Screen name="Filter" component={Filters} options={({ navigation }) => ({
                             drawerIcon: ({ color, size }) => <Ionicons size={size} color={color} name={'md-funnel-sharp'} />,
@@ -100,6 +128,7 @@ export default function MainDrawerNavigator() {
                             headerLeft: () => <HeaderButton navigation={navigation} />,
                             headerStatusBarHeight: 59,
                             headerTitle: '',
+                            
                             headerLeftContainerStyle: { paddingLeft: 15 },
                             headerStyle: { borderBottomWidth: 0, elevation: 0, backgroundColor: colors.offWhite },
                         })} />
@@ -107,16 +136,8 @@ export default function MainDrawerNavigator() {
                 ) : (
                     <>
                         {/* Admin Screens */}
-                        <Drawer.Screen name="Home" component={AdminHome} options={({ navigation }) => ({
+                        < Drawer.Screen name="Home" component={AdminHome} options={({ navigation }) => ({
                             drawerIcon: ({ color, size, focused }) => <FontAwesome5 size={size} color={color} name={'house-user'} />
-                        })} />
-                        <Drawer.Screen name="Manage Rates" component={ManageRates} options={({ navigation }) => ({
-                            drawerIcon: ({ color, size, focused }) => <Ionicons size={size} color={color} name={'md-settings'} />,
-                            headerLeft: () => <HeaderButton navigation={navigation} />,
-                            headerStatusBarHeight: 59,
-                            headerTitle: '',
-                            headerLeftContainerStyle: { paddingLeft: 15 },
-                            headerStyle: { borderBottomWidth: 0, elevation: 0, backgroundColor: colors.offWhite },
                         })} />
                         <Drawer.Screen name="Manage Orders" component={ManageOrders} options={({ navigation }) => ({
                             drawerIcon: ({ color, size, focused }) => <Ionicons size={size} color={color} name={'md-newspaper'} />,
@@ -126,9 +147,18 @@ export default function MainDrawerNavigator() {
                             headerLeftContainerStyle: { paddingLeft: 15 },
                             headerStyle: { borderBottomWidth: 0, elevation: 0, backgroundColor: colors.offWhite },
                         })} />
+                           <Drawer.Screen name="Create Weekly Deals" component={weeklyDeals} options={({ navigation }) => ({
+                            drawerIcon: ({ color, size, focused }) => <Entypo size={size} color={color} name={'shopping-bag'} />,
+                            headerLeft: () => <HeaderButton navigation={navigation} />,
+                            headerStatusBarHeight: 59,
+                            headerTitle: '',
+                            headerLeftContainerStyle: { paddingLeft: 15 },
+                            headerStyle: { borderBottomWidth: 0, elevation: 0, backgroundColor: colors.offWhite },
+                        })} />
                     </>
                 )
             }
+
         </Drawer.Navigator>
     );
 }
