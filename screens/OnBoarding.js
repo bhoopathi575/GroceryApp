@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Dimensions, Image } from 'react-native';
 import AppLoading from 'expo-app-loading';
 import { useFonts, Inter_900Black, Inter_800ExtraBold, } from '@expo-google-fonts/inter';
@@ -6,10 +6,25 @@ import Constants from 'expo-constants';
 import { LinearGradient } from 'expo-linear-gradient';
 import colors from '../constants/colors';
 import Button from '../components/UI/Button';
-
+import { useEcommerceContext } from '../contexts/ContextProvider';
 const { width } = Dimensions.get('window');
 
 export default function OnBoarding(props) {
+
+    const [isShowData, setIsShowData] = useState(false);
+    const { auth } = useEcommerceContext();
+    const process = async () => {
+        if (auth.whoIsLogin) {
+            props.navigation.replace('DrawerCartStackNavigator')
+        } else {
+            setIsShowData(true);
+        }
+    }
+
+    useEffect(() => {
+        process()
+    })
+
     let [fontsLoaded] = useFonts({
         Inter_900Black,
         Inter_800ExtraBold,
@@ -26,7 +41,7 @@ export default function OnBoarding(props) {
         'light': require('../assets/fonts/Lato-Light.ttf'),
     });
 
-    if (!fontsLoaded) {
+    if (!fontsLoaded || !isShowData) {
         return <AppLoading />;
     } else {
         return (
@@ -34,14 +49,14 @@ export default function OnBoarding(props) {
                 <View style={{ flex: 1 }}>
                     <View style={styles.circle} />
                     <View>
-                        <Text style={styles.text} numberOfLines={1} adjustsFontSizeToFit={true}>Find Your</Text>
+                        <Text style={styles.text} numberOfLines={1} adjustsFontSizeToFit={true}>Groceries For</Text>
                     </View>
-                    <View style={{ top: -25 }}>
-                        <Text style={styles.text} numberOfLines={1} adjustsFontSizeToFit={true}>Gadget</Text>
+                    <View style={{ top: -16 }}>
+                        <Text style={styles.text} numberOfLines={1} adjustsFontSizeToFit={true}>Everyone</Text>
                     </View>
 
-                    <View style={{ alignItems: 'center', top: -27, zIndex: 99 }}>
-                        <Image source={require('../assets/images/ecommerce.png')} style={{ width: width, height: width / 1.1 }} resizeMode={'contain'} />
+                    <View style={{ alignItems: 'center', top: -20, zIndex: 99 }}>
+                        <Image source={require('../assets/images/ecommerce.png')} style={{ width: width, height: width / 1.1, borderRadius: 20 }} resizeMode={'contain'} />
                     </View>
                 </View>
                 <LinearGradient
@@ -72,7 +87,7 @@ const styles = StyleSheet.create({
         marginBottom: 12
     },
     text: {
-        fontSize: 60,
+        fontSize: 48,
         fontFamily: 'Inter_900Black',
         color: 'white'
     }
