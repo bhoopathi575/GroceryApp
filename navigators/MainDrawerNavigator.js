@@ -93,7 +93,7 @@ export default function MainDrawerNavigator() {
                 drawerInactiveTintColor: 'white',
                 drawerActiveTintColor: colors.primary,
                 drawerContentStyle: { justifyContent: 'space-between' },
-                drawerStyle: { backgroundColor: colors.primary, width: '100%' },
+                drawerStyle: { backgroundColor: auth.whoIsLogin == 'user' ? colors.green : colors.red, width: '100%' },
                 drawerLabelStyle: { fontWeight: 'bold', left: -19 },
                 drawerItemStyle: { marginLeft: 26 },
                 drawerType: 'slide',
@@ -128,7 +128,7 @@ export default function MainDrawerNavigator() {
                             headerLeft: () => <HeaderButton navigation={navigation} />,
                             headerStatusBarHeight: 59,
                             headerTitle: '',
-                            
+
                             headerLeftContainerStyle: { paddingLeft: 15 },
                             headerStyle: { borderBottomWidth: 0, elevation: 0, backgroundColor: colors.offWhite },
                         })} />
@@ -147,7 +147,7 @@ export default function MainDrawerNavigator() {
                             headerLeftContainerStyle: { paddingLeft: 15 },
                             headerStyle: { borderBottomWidth: 0, elevation: 0, backgroundColor: colors.offWhite },
                         })} />
-                           <Drawer.Screen name="Create Weekly Deals" component={weeklyDeals} options={({ navigation }) => ({
+                        <Drawer.Screen name="Create Weekly Deals" component={weeklyDeals} options={({ navigation }) => ({
                             drawerIcon: ({ color, size, focused }) => <Entypo size={size} color={color} name={'shopping-bag'} />,
                             headerLeft: () => <HeaderButton navigation={navigation} />,
                             headerStatusBarHeight: 59,
