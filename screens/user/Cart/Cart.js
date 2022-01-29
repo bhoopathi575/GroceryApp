@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Text, ScrollView, View, StyleSheet, Alert } from 'react-native';
+import { Text, ScrollView, View, StyleSheet } from 'react-native';
 import colors from '../../../constants/colors';
 import { useEcommerceContext } from '../../../contexts/ContextProvider';
 import CartItem from '../../../components/user/orders/CartItem';
@@ -10,21 +10,40 @@ import checkAndWriteFile from '../../../functions/checkAndWriteFile';
 import Button from '../../../components/UI/Button';
 import generateID from '../../../functions/generateId';
 import RoundButton from '../../../components/UI/RoundButtton';
-import Dialog from "react-native-dialog";
+import { taxes } from '../../../constants/taxes';
+import Map from './Map';
+import moment from 'moment';
+import { SendEmail } from '../../../agent/agent';
 
 const Cart = props => {
-    const { auth, cart, setCart, allData, setAllData, setOrders, orders } = useEcommerceContext();
+    const {
+        auth,
+        cart,
+        setCart,
+        allData,
+        setAllData,
+        setOrders,
+        orders,
+        location,
+        setLocation,
+        showMapScreen,
+        setShowMapScreen,
+    } = useEcommerceContext();
+      
     const cartIndex = cart.findIndex(cartItem => cartItem.username == auth.loginUserInfo.username);
 
-    const [isDialogVisible, setIsDialogVisible] = useState(false);
-    const [address, setAddress] = useState('');
-
     let totalPrice = 0;
+    let totalGst = 0;
+    let totalQst = 0;
+    let totalAmount = 0;
     try {
 
         cart[cartIndex].items.forEach(item => {
             totalPrice += parseFloat(item.totalPrice);
         })
+        totalGst = (totalPrice*taxes.gst)/100;
+        totalQst = (totalPrice*taxes.qst)/100;
+        totalAmount = totalPrice + totalGst + totalQst;
     } catch (err) {
         totalPrice = 0
     }
@@ -45,8 +64,7 @@ const Cart = props => {
     }
 
     const handleIncrementDecrement = async (id, category, increDecre, product) => {
-        console.log(id, category, increDecre)
-
+        try{
         const cartIndex = cart.findIndex(cartItem => cartItem.username == auth.loginUserInfo.username);
         if (cartIndex == -1) return;
 
@@ -55,6 +73,7 @@ const Cart = props => {
         if (index == -1) return;
 
         const quantity = parseInt(increDecre == 'decrement' ? (product.quantity == 1 ? 1 : product.quantity - 1) : product.quantity + 1);
+        console.log("MyQuan", quantity);
         const newCart = [...cart]
         cart[cartIndex].items.splice(index, 1, new CartItemModal(product.id, product.name, product.detail, product.price, product.uri, category, quantity, product.price * quantity))
 
@@ -65,6 +84,9 @@ const Cart = props => {
         }
         await checkAndWriteFile(newData);
         setAllData(newData)
+    } catch(e) {
+        console.log("Error", e);
+    }
 
     }
 
@@ -95,22 +117,33 @@ const Cart = props => {
         ));
         setCart(cartDuplicate);
 
+        var minutesToAdd = 3;
+        var currentDate = new Date();
+        var futureDate = new Date(currentDate.getTime() + minutesToAdd * 60000).toUTCString();
+
         const newOrders = [
             ...orders,
             new OrderModel(
                 generateID(),
                 auth.loginUserInfo.username,
                 new Date().toUTCString(),
-                totalPrice,
-                new Date(new Date().getTime() + 24 * 60 * 60 * 1000).toUTCString(),
+                totalAmount,
+                futureDate,
                 'not picked yet',
                 cart[cartIndex].items,
-                address
+                location.place,
+                totalGst,
+                totalQst,
+                location.id
             )
         ]
-
-        alert('Please check your email for order confirmation!')
-
+        const deliverytime = moment().add(3, 'minutes');
+        const date = deliverytime.format('MMMM D YYYY');
+        const time = deliverytime.format('HH a')
+        setLocation(null);
+        const OrderText = `The order will be delivered on ${date} by ${time}`;
+        alert(OrderText);
+        SendEmail(auth.loginUserInfo.username, auth.loginUserInfo.email, OrderText);
         setOrders(newOrders);
 
         const newFileData = {
@@ -118,15 +151,18 @@ const Cart = props => {
             cart: cartDuplicate,
             orders: newOrders
         };
+        try{
         await checkAndWriteFile(newFileData);
         setAllData(newFileData);
+        } catch(e) {
+            alert(e);
+        }
     }
 
-
     return (
+        showMapScreen ? <Map/> :
         <View style={styles.screen}>
-            <View style={{ flex: 0.9 }}>
-
+            <View style={{ flex: 0.8 }}>
                 <ScrollView>
                     {cart[cartIndex].items.map((item) => (
                         <View key={item.id} style={{}}>
@@ -143,29 +179,27 @@ const Cart = props => {
                     ))}
                 </ScrollView>
             </View>
-            <View style={{ flex: 0.1, justifyContent: 'flex-end', marginHorizontal: 20, marginBottom: 20 }}>
-                <Button title={'Order Now'} onPress={setIsDialogVisible.bind(null, true)} />
+            <View style={{ flex: 0.1 }}>
+                <View style={{justifyContent: 'space-between', flexDirection:'row'}}>
+                    <Text style={styles.totalBoxTextLeft}>Grand Total:</Text>
+                    <Text style={styles.totalBoxTextRight}>$ {totalPrice}</Text>
+                </View>
+                <View style={{justifyContent: 'space-between', flexDirection:'row'}}>
+                    <Text style={styles.totalBoxTextLeft}>GST ({taxes.gst} %):</Text>
+                    <Text style={styles.totalBoxTextRight}>$ {totalGst}</Text>
+                </View>
+                <View style={{justifyContent: 'space-between', flexDirection:'row'}}>
+                    <Text style={styles.totalBoxTextLeft}>QST ({taxes.qst} %):</Text>
+                    <Text style={styles.totalBoxTextRight}>$ {totalQst.toFixed(2)}</Text>
+                </View>
+                <View style={{justifyContent: 'space-between', flexDirection:'row'}}>
+                    <Text style={styles.totalAmountText}>Total Amount(Incl. Taxes): </Text>
+                    <Text style={styles.totalAmountTextRight}>$ {totalAmount.toFixed(2)}</Text>
+                </View>
             </View>
-            {
-                isDialogVisible && (
-                    <Dialog.Container visible>
-                        <Dialog.Title>Provide us your Address!</Dialog.Title>
-                        <Dialog.Input
-                            value={address}
-                            onChangeText={setAddress}
-                            autoFocus
-                        />
-                        <Dialog.Button label="Cancel" onPress={() => {
-                            setIsDialogVisible(false);
-                        }} />
-                        <Dialog.Button label="Done" onPress={() => {
-                            if (!address) return
-                            setIsDialogVisible(false);
-                            handleOrder();
-                        }} />
-                    </Dialog.Container>
-                )
-            }
+            <View style={{ flex: 0.1, justifyContent: 'flex-end', marginHorizontal: 20, marginBottom: 20 }}>
+                <Button title={'Order Now'} onPress={() => (!location) ? setShowMapScreen(true) : handleOrder()} />
+            </View>
         </View>
     );
 }
@@ -180,5 +214,27 @@ const styles = StyleSheet.create({
     noItemLabel: {
         fontSize: 16,
         fontFamily: 'light'
+    },
+    totalBoxTextLeft: {
+        fontSize: 13,
+        marginLeft: 20,
+        flex: 0.8
+    },
+    totalBoxTextRight: {
+        fontSize: 13,
+        marginRight: 20,
+        flex: 0.2,
+    },
+    totalAmountText: {
+        fontSize: 13,
+        marginLeft: 20,
+        flex: 0.8,
+        fontWeight: 'bold'    
+    },
+    totalAmountTextRight: {
+        fontSize: 13,
+        marginRight: 20,
+        flex: 0.2,
+        fontWeight: 'bold'    
     }
 })
