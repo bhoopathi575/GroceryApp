@@ -61,7 +61,32 @@ const MapScreen = (props) => {
             </View>
           </View>
           {deliveryType && deliveryType == "Pickup" && (
-           
+            <ScrollView>
+              {places.map((place, index) => (
+                <View
+                  key={`data-pd-${index}`}
+                  style={{
+                    justifyContent: "space-between",
+                    flexDirection: "row",
+                  }}
+                >
+                  <View style={{ flex: 0.9 }}>
+                    <Text style={{ marginLeft: 8 }}>{place.place}</Text>
+                  </View>
+                  <View style={{ flex: 0.1 }}>
+                    <RadioButton
+                      value={place}
+                      onPress={() => setLocationLocal(place)}
+                      status={
+                        location != null && place.id == location.id
+                          ? "checked"
+                          : "unchecked"
+                      }
+                    />
+                  </View>
+                </View>
+              ))}
+            </ScrollView>
           )}
           {deliveryType && deliveryType == "Home Delivery" && (
             <View>
