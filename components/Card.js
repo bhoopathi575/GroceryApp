@@ -90,13 +90,13 @@ export const Card = (props) => {
         if (priceFilter == 'nothing') {
             return true;
         }
-        else if (priceFilter == 'price > 1000' && product.price > 1000) {
+        else if (priceFilter == 'price > 100' && product.price > 100) {
             return true;
-        } else if (priceFilter == 'price < 500' && product.price < 500) {
+        } else if (priceFilter == 'price < 50' && product.price < 50) {
             return true;
-        } else if (priceFilter == 'price > 500' && product.price > 500) {
+        } else if (priceFilter == 'price > 50' && product.price > 50) {
             return true;
-        } else if (priceFilter == 'price < 100' && product.price < 100) {
+        } else if (priceFilter == 'price < 10' && product.price < 10) {
             return true;
         } else if (priceFilter == 'price < 5' && product.price < 5) {
             return true;
