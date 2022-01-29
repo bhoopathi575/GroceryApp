@@ -98,7 +98,7 @@ export const Card = (props) => {
             return true;
         } else if (priceFilter == 'price < 100' && product.price < 100) {
             return true;
-        } else if (priceFilter == 'price < 50' && product.price < 50) {
+        } else if (priceFilter == 'price < 5' && product.price < 5) {
             return true;
 
         }
