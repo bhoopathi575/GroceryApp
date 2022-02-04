@@ -13,7 +13,7 @@ import Filters from '../screens/user/filter/Filter';
 import Favorites from '../screens/user/favorites/Favorites';
 import OffersAndDeals from '../screens/user/offersanddeals/OfferAndDeals';
 import HeaderButton from '../components/UI/HeaderButton';
-import weeklyDeals from '../components/admin/deals/weeklyDeals';
+import WeeklyDeals from '../components/admin/deals/weeklyDeals';
 
 const { width } = Dimensions.get('window');
 import { Ionicons, FontAwesome5, MaterialIcons, Entypo } from '@expo/vector-icons';
@@ -93,7 +93,7 @@ export default function MainDrawerNavigator() {
                 drawerInactiveTintColor: 'white',
                 drawerActiveTintColor: colors.primary,
                 drawerContentStyle: { justifyContent: 'space-between' },
-                drawerStyle: { backgroundColor: auth.whoIsLogin == 'user' ? colors.green : colors.red, width: '100%' },
+                drawerStyle: { backgroundColor: auth.whoIsLogin == 'user' ? colors.primary : colors.red, width: '100%' },
                 drawerLabelStyle: { fontWeight: 'bold', left: -19 },
                 drawerItemStyle: { marginLeft: 26 },
                 drawerType: 'slide',
@@ -147,7 +147,7 @@ export default function MainDrawerNavigator() {
                             headerLeftContainerStyle: { paddingLeft: 15 },
                             headerStyle: { borderBottomWidth: 0, elevation: 0, backgroundColor: colors.offWhite },
                         })} />
-                        <Drawer.Screen name="Create Weekly Deals" component={weeklyDeals} options={({ navigation }) => ({
+                        <Drawer.Screen name="Create Weekly Deals" component={WeeklyDeals} options={({ navigation }) => ({
                             drawerIcon: ({ color, size, focused }) => <Entypo size={size} color={color} name={'shopping-bag'} />,
                             headerLeft: () => <HeaderButton navigation={navigation} />,
                             headerStatusBarHeight: 59,
