@@ -9,13 +9,13 @@ import Button from '../../UI/Button';
 import Ratings from '../../UI/Ratings';
 import CartItem from './CartItem';
 import CountDown from 'react-native-countdown-component';
-import getDifferenceInSeconds from '../../../functions/getTimeInSeconds';
-import getDifferenceInDays from '../../../functions/getDifferenceInDays';
+import getTotalDifferenceInSeconds from '../../../functions/getTotalDifferenceInSeconds';
+import getDifferenceInNumberOfDays from '../../../functions/getDifferenceInNumberOfDays';
 
 const OrderItem = props => { // inprogress
     let times;
     if (props.order) {
-        times = getDifferenceInDays(new Date(props.order.startDate), new Date()) <= 1.1 ? getDifferenceInSeconds(new Date(props.order.deliveryTime), new Date()) : 0
+        times = getDifferenceInNumberOfDays(new Date(props.order.startDate), new Date()) <= 3 ? getTotalDifferenceInSeconds(new Date(props.order.deliveryTime), new Date()) : 0
     }
 
     const [time, setTime] = useState(times);
