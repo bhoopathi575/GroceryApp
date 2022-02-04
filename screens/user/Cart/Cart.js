@@ -186,7 +186,7 @@ const Cart = props => {
                 </View>
                 <View style={{justifyContent: 'space-between', flexDirection:'row'}}>
                     <Text style={styles.totalBoxTextLeft}>GST ({taxes.gst} %):</Text>
-                    <Text style={styles.totalBoxTextRight}>$ {totalGst}</Text>
+                    <Text style={styles.totalBoxTextRight}>$ {totalGst.toFixed(2)}</Text>
                 </View>
                 <View style={{justifyContent: 'space-between', flexDirection:'row'}}>
                     <Text style={styles.totalBoxTextLeft}>QST ({taxes.qst} %):</Text>

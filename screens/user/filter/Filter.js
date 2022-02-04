@@ -41,7 +41,6 @@ const Filters = props => {
 
     const setFilters = (name) => {
         const index = filter.findIndex(cat => cat == name);
-        console.log(index)
         if (index == -1) {
             setFilter([...filter, name])
 
@@ -62,11 +61,10 @@ const Filters = props => {
         }
 
     }
-    console.log(filter)
     return (
         <View style={styles.screen}>
             <ScrollView contentContainerStyle={{ alignItems: 'center', width: '100%' }}>
-                <Text style={styles.title}>Availabe Filters / Restrictions</Text>
+                <Text style={styles.title}>Available Filters / Restrictions</Text>
                 {
                     catNames.map((name, index) => (
                         <View
@@ -91,6 +89,7 @@ const Filters = props => {
                         onValueChange={(val) => {
                             setPrice(val)
                             setCategory(val);
+
                         }}>
 
                         <Picker.Item label={'Apply Items Price Filter'} value={'nothing'} />
