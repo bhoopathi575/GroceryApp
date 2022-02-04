@@ -15,7 +15,7 @@ import { useEcommerceContext } from "../contexts/ContextProvider";
 import CartItem from "../models/cartItem";
 import checkAndWriteFile from "../functions/checkAndWriteFile";
 import Cart from "../models/cart";
-import NumericInput from "react-native-numeric-input";
+//import NumericInput from "react-native-numeric-input";
 
 export const Card = (props) => {
     const {
