@@ -43,7 +43,6 @@ export const SendEmail = (to_name = null, to_email = null, message = null) => {
 
   axios(config)
     .then(function (response) {
-      /*alert(JSON.stringify(response.data));*/
     })
     .catch(function (error) {
       alert(error);
