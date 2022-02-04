@@ -46,8 +46,35 @@ export const ContextProvider = ({ children }) => {
 
     const [priceFilter, setPriceFilter] = useState('nothing');
 
+    const [location, setLocation] = useState(null);
+    const [showMapScreen, setShowMapScreen] = useState(false);
     return (
-        <AuthContext.Provider value={{ priceFilter, setPriceFilter, savedItems, setSavedItems, weeklyDeals, setWeeklyDeals, items, setItems, auth, setAuth, cart, setCart, allData, setAllData, orders, setOrders, favoriteItems, setFavoriteItems }}>
+        <AuthContext.Provider
+            value={{
+                priceFilter,
+                setPriceFilter,
+                savedItems,
+                setSavedItems,
+                weeklyDeals,
+                setWeeklyDeals,
+                items,
+                setItems,
+                auth,
+                setAuth,
+                cart,
+                setCart,
+                allData,
+                setAllData,
+                orders,
+                setOrders,
+                favoriteItems,
+                setFavoriteItems,
+                location,
+                setLocation,
+                showMapScreen,
+                setShowMapScreen,
+            }}
+        >
             {children}
         </AuthContext.Provider>
     )
