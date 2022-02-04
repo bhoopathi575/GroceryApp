@@ -9,9 +9,9 @@ const checkAndReadFile = async () => {
 
     const file_path = FileSystem.documentDirectory + folderName + '/' + fileName;
     const fileInfo = await FileSystem.getInfoAsync(file_path);
+    console.log("Path", fileInfo);
     if (fileInfo.exists) {
         const data = await FileSystem.readAsStringAsync(file_path);
-        console.log(JSON.parse(data))
         return JSON.parse(data);
     }
     await checkAndCreateFolder();

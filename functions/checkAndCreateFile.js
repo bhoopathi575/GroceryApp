@@ -11,7 +11,6 @@ const checkAndCreateFile = async () => {
     const fileInfo = await FileSystem.getInfoAsync(fileUri);
     if (!fileInfo.exists) {
         await FileSystem.writeAsStringAsync(fileUri, JSON.stringify(template), { encoding: FileSystem.EncodingType.UTF8 });
-        //https://docs.expo.dev/versions/latest/sdk/filesystem/
         // const asset = await MediaLibrary.createAssetAsync(fileUri)
         // await MediaLibrary.createAlbumAsync("Download", asset, false)
     }
