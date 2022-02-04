@@ -102,7 +102,7 @@ const ProductDetailScreen = props => {
             <View style={styles.buttonContainer}>
                 <Button color={colors.primary} title='Add to Cart' onPress={handleAddToCart} />
             </View>
-            <Text style={styles.price}>${product?.price}</Text>
+            <Text style={styles.price}>${product?.price} {product.unit ? ("/" + product.unit) : ""}</Text>
             <Text style={styles.description}>{product?.detail}</Text>
             <View style={{ marginTop: 40 }}>
                 <Text style={{ fontSize: 30, marginLeft: 20, textShadowColor: 'white', fontFamily: 'bold' }}>Ratings</Text>
