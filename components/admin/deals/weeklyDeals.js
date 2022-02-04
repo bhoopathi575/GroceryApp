@@ -9,7 +9,7 @@ import Cart from '../../../models/cart';
 import CartItem from '../../../models/cartItem';
 
 
-const weeklyDeals = props => {
+const WeeklyDeals = props => {
     const { allData, setAllData, weeklyDeals, setWeeklyDeals, cart, setCart, auth } = useEcommerceContext();
 
     const handleDeletePress = async (id) => {
@@ -140,7 +140,7 @@ const weeklyDeals = props => {
     );
 }
 
-export default weeklyDeals;
+export default WeeklyDeals;
 
 const styles = StyleSheet.create({
     screen: {
