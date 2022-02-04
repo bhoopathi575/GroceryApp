@@ -21,7 +21,7 @@ const AddModifyItems = props => {
     const [imageUri, setImageUri] = useState(isEdit ? product.uri.toString() : '')
     const [isUsernameValid, setIsUsernameValid] = useState(true)
     const [category, setCategory] = useState();
-
+    const [unit, setUnit] = useState(isEdit ? product.unit : null);
     const { allData, setAllData, items, setItems } = useEcommerceContext();
 
     useEffect(() => {
@@ -32,7 +32,6 @@ const AddModifyItems = props => {
 
     const addItemHandler = async () => {
         const UID = generateID()
-        console.log('level one seller', name.length > 2, detail.length > 10, imageUri.length > 10), price.length > 1
         if (name.length > 2 && detail.length > 10 && imageUri.length > 10 && price.length > 1 && category.length > 2) {
             const newItem = {
                 UID,
@@ -40,14 +39,15 @@ const AddModifyItems = props => {
                 detail,
                 price: parseFloat(price),
                 imageUri,
-                category
+                category,
+                unit
                 // []   
             }
             const copyCategories = [...items.categories];
 
             const indexOfCategory = copyCategories.findIndex(cat => cat.name == category);
 
-            copyCategories[indexOfCategory].items.push(new Item(UID, name, detail, parseFloat(price), imageUri, []));
+            copyCategories[indexOfCategory].items.push(new Item(UID, name, detail, parseFloat(price), imageUri, [], unit));
 
             const copyItems = { ...items, categories: copyCategories };
 
@@ -79,7 +79,7 @@ const AddModifyItems = props => {
 
         const itemIndex = copyCategories[indexOfCategory].items.findIndex(item => item.id == product.id);
 
-        copyCategories[indexOfCategory].items.splice(itemIndex, 1, new Item(UID, name, detail, parseFloat(price), imageUri, []));
+        copyCategories[indexOfCategory].items.splice(itemIndex, 1, new Item(UID, name, detail, parseFloat(price), imageUri, [], unit));
 
         const copyItems = { ...items, categories: copyCategories };
 
@@ -144,6 +144,20 @@ const AddModifyItems = props => {
                     </Text>
                 </View>
                 <TextInput
+                    placeholder='Units'
+                    value={unit}
+                    style={{ color: 'black', borderBottomWidth: 1, borderColor: isUsernameValid ? imageUri == 'username' ? colors.primary : 'grey' : 'red', paddingBottom: 0, paddingLeft: 0, }}
+                    placeholderTextColor={isUsernameValid ? colors.primary : 'grey'}
+                    onChangeText={(text) => setUnit(text)}
+                />
+                <View style={{ marginVertical: 10, marginBottom: 20 }}>
+                    <Text style={{ color: isUsernameValid ? 'grey' : 'red', fontSize: 12, letterSpacing: -0.2 }}>
+                        {
+                            isUsernameValid ? "Units of your product e.g. per KG = /KG" : "Must be a unit."
+                        }
+                    </Text>
+                </View>
+                <TextInput
                     keyboardType='numeric'
                     placeholder='Price'
                     value={price}
@@ -167,9 +181,13 @@ const AddModifyItems = props => {
                         isEdit ? (
                             <Picker.Item label={categoryParameter} value={categoryParameter} />
                         ) : (
-                            items.categories.map((item, index) => (
-                                <Picker.Item label={item.name} value={item.name} key={index} />
-                            ))
+                            [null, ...items.categories].map((item, index) => {
+                                if (item == null) {
+                                    return (<Picker.Item label={"Select the category"} value={""} key={index} />)
+                                } else {
+                                    return (<Picker.Item label={item.name} value={item.name} key={index} />)
+                                }
+                            })
                         )
                     }
                 </Picker>
