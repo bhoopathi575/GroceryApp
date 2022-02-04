@@ -48,7 +48,7 @@ export default function OnBoarding(props) {
             <View style={styles.screen}>
                 <View >
                     <View >
-                        <Image source={require('../assets/images/gros3.jpg')} style={{ width: '100%', height: '100%', borderRadius: 20 }} resizeMode={'contain'} />
+                        <Image source={require('../assets/images/ecommerce.jpg')} style={{ width: '100%', height: '100%', borderRadius: 20 }} resizeMode={'contain'} />
                     </View>
                 </View>
 
