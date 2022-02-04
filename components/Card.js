@@ -141,15 +141,15 @@ export const Card = (props) => {
     const filterItems = item.items.filter((product) => {
         if (priceFilter == "nothing") {
             return true;
-        } else if (priceFilter == "price > 1000" && product.price > 1000) {
-            return true;
-        } else if (priceFilter == "price < 500" && product.price < 500) {
-            return true;
-        } else if (priceFilter == "price > 500" && product.price > 500) {
-            return true;
-        } else if (priceFilter == "price < 100" && product.price < 100) {
+        } else if (priceFilter == "price > 100" && product.price > 100) {
             return true;
         } else if (priceFilter == "price < 50" && product.price < 50) {
+            return true;
+        } else if (priceFilter == "price > 50" && product.price > 50) {
+            return true;
+        } else if (priceFilter == "price < 10" && product.price < 10) {
+            return true;
+        } else if (priceFilter == "price < 5" && product.price < 5) {
             return true;
         }
         return false;
